@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/jelajahiPage.dart';
 import 'package:google_fonts/google_fonts.dart'; 
+
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,10 +15,10 @@ class MyApp extends StatelessWidget {
      debugShowCheckedModeBanner: false,
 
     routes: {
-      "/home": (context) => HomePage(),
+      "/jelajahi": (context) => JelajahiPage(),
     },
 
-    initialRoute: "/home",
+    initialRoute: "/jelajahi",
 
     theme: ThemeData(
         fontFamily: GoogleFonts.poppins().fontFamily,
