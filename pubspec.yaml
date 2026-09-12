@@ -82,6 +82,10 @@ flutter:
         - asset: assets/fonts/Poppins-Regular.ttf
         - asset: assets/fonts/Poppins-SemiBold.ttf
 
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/Lora-VariableFont_wght.ttf
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
