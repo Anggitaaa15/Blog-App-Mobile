@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; 
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,13 +11,13 @@ class MyApp extends StatelessWidget {
 
     routes: {
       "/home": (context) => HomePage(),
-      "/jelajahi": (context) => JelajahiPage(),
-      "/buat": (context) => BuatPage(),
-      "/artikel-saya": (context) => ArtikelSayaPage(),
-      "/profil": (context) => ProfilPage(),
     },
 
     initialRoute: "/home",
+
+    theme: ThemeData(
+        fontFamily: GoogleFonts.poppins().fontFamily,
+      ),
     );
   }
 }
