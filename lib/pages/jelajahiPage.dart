@@ -159,7 +159,26 @@ class _JelajahiPageState extends State<JelajahiPage> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: AppColors.navy,
+                      image: DecorationImage(
+                        image: AssetImage(
+                          category['name'] == 'Teknologi'
+                              ? 'assets/images/teknologi.png'
+                              : category['name'] == 'Pendidikan'
+                                  ? 'assets/images/pendidikan.png'
+                                  : category['name'] == 'Gaya Hidup'
+                                      ? 'assets/images/gayahidup.png'
+                                      : category['name'] == 'Olahraga'
+                                          ? 'assets/images/olahraga.png'
+                                          : category['name'] == 'Kesehatan'
+                                              ? 'assets/images/kesehatan.png'
+                                              : 'assets/images/tipsTutorial.png',
+                        ),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withValues(alpha: 0.35),
+                          BlendMode.darken,
+                        ),
+                      ),
                     ),
                     alignment: Alignment.center,
                     child: Text(
