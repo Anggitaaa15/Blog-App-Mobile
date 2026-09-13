@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/pages/profil.dart';
 import 'package:frontend/pages/artikelSaya.dart';
 import 'package:frontend/pages/homePage.dart';
+import 'package:frontend/pages/createArtikel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
       routes: {
         "/profil": (context) => ProfilPage(),
         "/artikelSaya": (context) => Artikelsaya(),
-        "/beranda": (context) => Homepage()
+        "/beranda": (context) => Homepage(),
+        "/buat": (context) => BuatPage()
       },
 
       initialRoute: "/profil",
