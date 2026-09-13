@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/profil.dart';
+import 'package:frontend/pages/artikelSaya.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -13,7 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      routes: {"/profil": (context) => ProfilPage()},
+      routes: {
+        "/profil": (context) => const ProfilPage(),
+        "/artikelSaya": (context) => const Artikelsaya(),
+      },
 
       initialRoute: "/profil",
     );
