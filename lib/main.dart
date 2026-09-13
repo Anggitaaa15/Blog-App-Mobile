@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/profil.dart';
 import 'package:frontend/pages/artikelSaya.dart';
 
 void main() {
@@ -14,10 +15,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       routes: {
+        "/profil": (context) => const ProfilPage(),
         "/artikelSaya": (context) => const Artikelsaya(),
       },
 
-      initialRoute: "/artikelSaya",
+      initialRoute: "/profil",
     );
   }
 }
