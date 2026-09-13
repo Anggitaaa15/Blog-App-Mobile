@@ -1,9 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/theme/appColors.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/navigation.dart';
+import '../widgets/mobileStatusBar.dart';
+import 'detailArtikel.dart';
+import 'editArtikel.dart';
 
 class Artikelsaya extends StatefulWidget {
   const Artikelsaya({super.key});
@@ -19,9 +21,7 @@ class _ArtikelsayaState extends State<Artikelsaya> {
 
   Future<void> getPosts() async {
     final response = await http.get(
-      Uri.parse(
-        "http://localhost:3000/api/v1/posts/user/31",
-      ),
+      Uri.parse("http://localhost:3000/api/v1/posts/user/31"),
     );
 
     if (response.statusCode == 200) {
@@ -46,20 +46,51 @@ class _ArtikelsayaState extends State<Artikelsaya> {
     } else if (diff.inDays < 7) {
       return "${diff.inDays} hari yang lalu";
     } else {
-      return "${createdAt.day} ${[
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Jun",
-        "Jul",
-        "Agu",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Des"
-      ][createdAt.month - 1]} ${createdAt.year}";
+      return "${createdAt.day} ${["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][createdAt.month - 1]} ${createdAt.year}";
+    }
+  }
+
+  Future<void> deletePost(int id) async {
+    final response = await http.delete(
+      Uri.parse("http://localhost:3000/api/v1/posts/$id"),
+    );
+
+    if (response.statusCode == 200) {
+      print("Artikel berhasil dihapus");
+      getPosts();
+    } else {
+      print("Artikel gagal dihapus");
+      print("response.body");
+    }
+  }
+
+  Future<void> confirmDelete(int id) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Hapus Artikel"),
+          content: const Text("Yakin ingin menghapus artikel ini?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text("Batal"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text("Hapus"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      deletePost(id);
     }
   }
 
@@ -83,363 +114,375 @@ class _ArtikelsayaState extends State<Artikelsaya> {
       }
     }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return Column(
+      children: [
+        MobileStatusBar(),
 
-      // APP BAR
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        titleSpacing: 20,
+        Expanded(
+          child: Scaffold(
+            backgroundColor: Colors.white,
 
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: 30,
-              height: 30,
-            ),
+            // APP BAR
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              titleSpacing: 20,
 
-            const SizedBox(width: 8),
+              title: Row(
+                children: [
+                  Image.asset('assets/images/logo.png', width: 30, height: 30),
 
-            const Text(
-              'Lintas Kata',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.navy,
-                fontSize: 16,
-              ),
-            ),
+                  const SizedBox(width: 8),
 
-            const Spacer(),
-
-            const Icon(
-              Icons.search,
-              color: AppColors.navy,
-              size: 23,
-            ),
-
-            const SizedBox(width: 18),
-
-            const CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage(
-                'assets/images/profile.jpg',
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      body: Column(
-        children: [
-          // TAB PUBLISHED & DRAFT
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedTab = 0;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                      top: 14,
-                      bottom: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: selectedTab == 0
-                              ? AppColors.navy
-                              : Colors.transparent,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      "Published",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: selectedTab == 0
-                            ? AppColors.navy
-                            : Colors.grey,
-                        fontWeight: selectedTab == 0
-                            ? FontWeight.w500
-                            : FontWeight.w400,
-                      ),
+                  const Text(
+                    'Lintas Kata',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.navy,
+                      fontSize: 16,
                     ),
                   ),
-                ),
-              ),
 
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedTab = 1;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                      top: 14,
-                      bottom: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: selectedTab == 1
-                              ? AppColors.navy
-                              : Colors.transparent,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      "Draft",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: selectedTab == 1
-                            ? AppColors.navy
-                            : Colors.grey,
-                        fontWeight: selectedTab == 1
-                            ? FontWeight.w500
-                            : FontWeight.w400,
-                      ),
-                    ),
+                  const Spacer(),
+
+                  const Icon(Icons.search, color: AppColors.navy, size: 23),
+
+                  const SizedBox(width: 18),
+
+                  const CircleAvatar(
+                    radius: 16,
+                    backgroundImage: AssetImage('assets/images/profile.jpg'),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
 
-          // LIST ARTIKEL
-          Expanded(
-            child: filteredPosts.isEmpty
-                ? const Center(
-                    child: Text(
-                      "Belum ada artikel",
-                      style: TextStyle(
-                        color: AppColors.grey,
-                        fontSize: 13,
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(20),
-                    itemCount: filteredPosts.length,
-                    itemBuilder: (context, index) {
-                      final itemPost = filteredPosts[index];
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                          ),
-                        ),
-
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // GAMBAR
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                itemPost['imageUrl'] ?? '',
-                                width: 85,
-                                height: 115,
-                                fit: BoxFit.cover,
-                                errorBuilder:
-                                    (context, error, stackTrace) {
-                                  return Container(
-                                    width: 85,
-                                    height: 85,
-                                    color: Colors.grey.shade200,
-                                    child: const Icon(
-                                      Icons.image_outlined,
-                                      color: Colors.grey,
-                                    ),
-                                  );
-                                },
+            body: Column(
+              children: [
+                // TAB PUBLISHED & DRAFT
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedTab = 0;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 14, bottom: 12),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: selectedTab == 0
+                                    ? AppColors.navy
+                                    : Colors.transparent,
+                                width: 1.5,
                               ),
                             ),
+                          ),
+                          child: Text(
+                            "Published",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: selectedTab == 0
+                                  ? AppColors.navy
+                                  : Colors.grey,
+                              fontWeight: selectedTab == 0
+                                  ? FontWeight.w500
+                                  : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
 
-                            const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedTab = 1;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(top: 14, bottom: 12),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: selectedTab == 1
+                                    ? AppColors.navy
+                                    : Colors.transparent,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            "Draft",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: selectedTab == 1
+                                  ? AppColors.navy
+                                  : Colors.grey,
+                              fontWeight: selectedTab == 1
+                                  ? FontWeight.w500
+                                  : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
 
-                            // ISI CARD
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                children: [
-                                  // KATEGORI + TITIK TIGA
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 3,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.navy
-                                              .withOpacity(0.08),
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                        ),
-                                        child: Text(
-                                          itemPost['categoryName'] ?? '',
-                                          style: const TextStyle(
-                                            color: AppColors.navy,
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
+                // LIST ARTIKEL
+                Expanded(
+                  child: filteredPosts.isEmpty
+                      ? const Center(
+                          child: Text(
+                            "Belum ada artikel",
+                            style: TextStyle(
+                              color: AppColors.grey,
+                              fontSize: 13,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(20),
+                          itemCount: filteredPosts.length,
+                          itemBuilder: (context, index) {
+                            final itemPost = filteredPosts[index];
+
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailArtikel(postId: itemPost['id']),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // GAMBAR
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        itemPost['imageUrl'] ?? '',
+                                        width: 85,
+                                        height: 115,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Container(
+                                                width: 85,
+                                                height: 85,
+                                                color: Colors.grey.shade200,
+                                                child: const Icon(
+                                                  Icons.image_outlined,
+                                                  color: Colors.grey,
+                                                ),
+                                              );
+                                            },
                                       ),
+                                    ),
 
-                                      const Spacer(),
+                                    const SizedBox(width: 10),
 
-                                      // TITIK TIGA
-                                      PopupMenuButton<String>(
-                                        padding: EdgeInsets.zero,
-                                        constraints:
-                                            const BoxConstraints(),
-                                        iconSize: 20,
-                                        icon: const Icon(
-                                          Icons.more_vert,
-                                          color: AppColors.navy,
-                                        ),
-
-                                        onSelected: (value) {
-                                          if (value == "edit") {
-                                            print(
-                                              "Edit artikel ${itemPost['id']}",
-                                            );
-                                          }
-
-                                          if (value == "delete") {
-                                            print(
-                                              "Delete artikel ${itemPost['id']}",
-                                            );
-                                          }
-                                        },
-
-                                        itemBuilder: (context) => [
-                                          const PopupMenuItem(
-                                            value: "edit",
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.edit_outlined,
-                                                  size: 18,
+                                    // ISI CARD
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // KATEGORI + TITIK TIGA
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 3,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.navy
+                                                      .withOpacity(0.08),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                 ),
-                                                SizedBox(width: 8),
-                                                Text("Edit"),
-                                              ],
+                                                child: Text(
+                                                  itemPost['categoryName'] ??
+                                                      '',
+                                                  style: const TextStyle(
+                                                    color: AppColors.navy,
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+
+                                              const Spacer(),
+
+                                              // TITIK TIGA
+                                              PopupMenuButton<String>(
+                                                padding: EdgeInsets.zero,
+                                                constraints:
+                                                    const BoxConstraints(),
+                                                iconSize: 20,
+                                                icon: const Icon(
+                                                  Icons.more_vert,
+                                                  color: AppColors.navy,
+                                                ),
+
+                                                onSelected: (value) {
+                                                  if (value == "edit") {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            EditArtikelPage(
+                                                              post: itemPost,
+                                                            ),
+                                                      ),
+                                                    ).then((value) {
+                                                      if (value == true) {
+                                                        getPosts();
+                                                      }
+                                                    });
+                                                  }
+
+                                                  if (value == "delete") {
+                                                    confirmDelete(itemPost['id']);
+                                                  }
+                                                },
+
+                                                itemBuilder: (context) => [
+                                                  PopupMenuItem(
+                                                    value: "edit",
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.edit_outlined,
+                                                          size: 18,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text("Edit"),
+                                                      ],
+                                                    ),
+                                                  ),
+
+                                                  PopupMenuItem(
+                                                    value: "delete",
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.delete_outline,
+                                                          size: 18,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text("Delete"),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+
+                                          const SizedBox(height: 5),
+
+                                          // JUDUL
+                                          Text(
+                                            itemPost['title'] ?? '',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
                                             ),
                                           ),
 
-                                          const PopupMenuItem(
-                                            value: "delete",
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.delete_outline,
-                                                  size: 18,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text("Delete"),
-                                              ],
+                                          const SizedBox(height: 4),
+
+                                          // CONTENT
+                                          Text(
+                                            itemPost['content'] ?? '',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.black87,
                                             ),
+                                          ),
+
+                                          const SizedBox(height: 7),
+
+                                          // USER + WAKTU
+                                          Row(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 8,
+                                                backgroundImage: NetworkImage(
+                                                  itemPost['userImage'] ?? '',
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 5),
+
+                                              Text(
+                                                itemPost['username'] ?? '',
+                                                style: const TextStyle(
+                                                  fontSize: 9,
+                                                  color: AppColors.navy,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 8),
+
+                                              Text(
+                                                formatTimeAgo(
+                                                  itemPost['createdAt'],
+                                                ),
+                                                style: const TextStyle(
+                                                  fontSize: 9,
+                                                  color: AppColors.grey,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-
-                                  const SizedBox(height: 5),
-
-                                  // JUDUL
-                                  Text(
-                                    itemPost['title'] ?? '',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
                                     ),
-                                  ),
-
-                                  const SizedBox(height: 4),
-
-                                  // CONTENT
-                                  Text(
-                                    itemPost['content'] ?? '',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 7),
-
-                                  // USER + WAKTU
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 8,
-                                        backgroundImage: NetworkImage(
-                                          itemPost['userImage'] ?? '',
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 5),
-
-                                      Text(
-                                        itemPost['username'] ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 9,
-                                          color: AppColors.navy,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 8),
-
-                                      Text(
-                                        formatTimeAgo(
-                                          itemPost['createdAt'],
-                                        ),
-                                        style: const TextStyle(
-                                          fontSize: 9,
-                                          color: AppColors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
+                ),
+              ],
+            ),
+            bottomNavigationBar: CustomNavBar(currentIndex: 3),
           ),
-        ],
-      ),
-      bottomNavigationBar: CustomNavBar(currentIndex: 3),
+        ),
+      ],
     );
   }
 }

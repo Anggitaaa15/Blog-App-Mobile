@@ -2,70 +2,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/detailArtikel.dart';
 import 'package:http/http.dart' as http;
-import '../widgets/mobileStatusBar.dart';
 import '../theme/appColors.dart';
 
-class DetailCategoryPage extends StatefulWidget {
-  final int categoryId;
-  final String categoryName;
-
-  const DetailCategoryPage({
-    super.key,
-    required this.categoryId,
-    required this.categoryName,
-  });
+class TersimpanPage extends StatefulWidget {
+  const TersimpanPage({super.key});
 
   @override
-  State<DetailCategoryPage> createState() => _DetailCategoryPageState();
+  State<TersimpanPage> createState() => _TersimpanPageState();
 }
 
-class _DetailCategoryPageState extends State<DetailCategoryPage> {
-  List posts = [];
-
-  Set<int> savedPostIds = {};
-
-  Future<void> toggleBookmark(int postId) async {
-    if (savedPostIds.contains(postId)) {
-      final response = await http.delete(
-        Uri.parse(
-          "http://localhost:3000/api/v1/bookmarks/user/31/post/$postId",
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          savedPostIds.remove(postId);
-        });
-
-        print("Artikel dihapus dari tersimpan");
-      } else {
-        print(response.body);
-      }
-    } else {
-      final response = await http.post(
-        Uri.parse(
-          "http://localhost:3000/api/v1/bookmarks",
-        ),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({
-          "userId": 31,
-          "postId": postId,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        setState(() {
-          savedPostIds.add(postId);
-        });
-
-        print("Artikel berhasil disimpan");
-      } else {
-        print(response.body);
-      }
-    }
-  }
+class _TersimpanPageState extends State<TersimpanPage> {
+  List bookmarks = [];
 
   Future<void> getBookmarks() async {
     final response = await http.get(
@@ -78,31 +25,10 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
       final data = jsonDecode(response.body);
 
       setState(() {
-        savedPostIds = {
-          for (var item in data['data']['bookmarks'])
-            item['id'] as int,
-        };
+        bookmarks = data['data']['bookmarks'];
       });
     } else {
-      print("Data bookmark gagal diambil");
-    }
-  }
-
-  Future<void> getPosts() async {
-    final response = await http.get(
-      Uri.parse(
-        "http://localhost:3000/api/v1/posts?categoryId=${widget.categoryId}",
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      setState(() {
-        posts = data['data']['posts'];
-      });
-    } else {
-      print("Data gagal diambil");
+      print("Artikel tersimpan gagal diambil");
     }
   }
 
@@ -137,67 +63,37 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
   @override
   void initState() {
     super.initState();
-
-    getPosts();
     getBookmarks();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        MobileStatusBar(),
+    return Scaffold(
+      backgroundColor: Colors.white,
 
-        Expanded(
-          child: Scaffold(
-            backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          "Tersimpan",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.navy,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
 
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-
-              leading: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.arrow_back,
-                  color: AppColors.navy,
-                ),
+      body: bookmarks.isEmpty
+          ? const Center(
+              child: Text(
+                "Belum ada artikel tersimpan",
               ),
-
-              title: Text(
-                widget.categoryName,
-                style: const TextStyle(
-                  color: AppColors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              actions: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 16),
-                  child: CircleAvatar(
-                    radius: 16,
-                    backgroundImage: AssetImage(
-                      'assets/images/profile.jpg',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            body: ListView.builder(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-
-              itemCount: posts.length,
-
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: bookmarks.length,
               itemBuilder: (context, index) {
-                final itemPost = posts[index];
+                final itemPost = bookmarks[index];
 
                 return GestureDetector(
                   onTap: () {
@@ -230,13 +126,11 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                         // GAMBAR ARTIKEL
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-
                           child: Image.network(
                             itemPost['imageUrl'] ?? '',
                             width: 85,
                             height: 115,
                             fit: BoxFit.cover,
-
                             errorBuilder: (
                               context,
                               error,
@@ -246,7 +140,6 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                                 width: 85,
                                 height: 115,
                                 color: Colors.grey.shade200,
-
                                 child: const Icon(
                                   Icons.image_outlined,
                                   color: Colors.grey,
@@ -273,14 +166,12 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                                       horizontal: 8,
                                       vertical: 3,
                                     ),
-
                                     decoration: BoxDecoration(
                                       color: AppColors.navy
                                           .withOpacity(0.08),
                                       borderRadius:
                                           BorderRadius.circular(20),
                                     ),
-
                                     child: Text(
                                       itemPost['categoryName'] ?? '',
                                       style: const TextStyle(
@@ -293,23 +184,10 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
 
                                   const Spacer(),
 
-                                  IconButton(
-                                    onPressed: () {
-                                      toggleBookmark(
-                                        itemPost['id'],
-                                      );
-                                    },
-
-                                    icon: Icon(
-                                      savedPostIds.contains(
-                                        itemPost['id'],
-                                      )
-                                          ? Icons.bookmark
-                                          : Icons.bookmark_border,
-
-                                      color: AppColors.navy,
-                                      size: 19,
-                                    ),
+                                  const Icon(
+                                    Icons.bookmark,
+                                    color: AppColors.navy,
+                                    size: 20,
                                   ),
                                 ],
                               ),
@@ -321,10 +199,10 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                                 itemPost['title'] ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
                               ),
 
@@ -335,9 +213,9 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                                 itemPost['content'] ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-
                                 style: const TextStyle(
                                   fontSize: 10,
+                                  color: Colors.black87,
                                 ),
                               ),
 
@@ -350,14 +228,12 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                                     radius: 8,
                                     backgroundColor:
                                         Colors.grey.shade200,
-
                                     backgroundImage:
                                         itemPost['userImage'] != null
                                             ? NetworkImage(
                                                 itemPost['userImage'],
                                               )
                                             : null,
-
                                     child:
                                         itemPost['userImage'] == null
                                             ? const Icon(
@@ -382,9 +258,11 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                                   const SizedBox(width: 8),
 
                                   Text(
-                                    formatTimeAgo(
-                                      itemPost['createdAt'],
-                                    ),
+                                    itemPost['createdAt'] != null
+                                        ? formatTimeAgo(
+                                            itemPost['createdAt'],
+                                          )
+                                        : '',
                                     style: const TextStyle(
                                       fontSize: 9,
                                       color: AppColors.grey,
@@ -401,9 +279,6 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                 );
               },
             ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -3,39 +3,30 @@ import 'package:flutter/material.dart';
 import 'package:frontend/theme/appColors.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import '../widgets/navigation.dart';
-import '../widgets/mobileStatusBar.dart';
 import 'package:http_parser/http_parser.dart';
+import '../widgets/mobileStatusBar.dart';
 
-class BuatPage extends StatefulWidget {
-  const BuatPage({super.key});
+class EditArtikelPage extends StatefulWidget {
+  final Map post;
+
+  const EditArtikelPage({
+    super.key,
+    required this.post,
+  });
 
   @override
-  State<BuatPage> createState() => _BuatPageState();
+  State<EditArtikelPage> createState() => _EditArtikelPageState();
 }
 
-class _BuatPageState extends State<BuatPage> {
+class _EditArtikelPageState extends State<EditArtikelPage> {
   XFile? image;
 
   List categories = [];
   int? selectedCategory;
+  String selectedStatus = "Published";
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController contentController = TextEditingController();
-
-  Future<void> pickImage() async {
-    final ImagePicker picker = ImagePicker();
-
-    final XFile? pickedImage = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (pickedImage != null) {
-      setState(() {
-        image = pickedImage;
-      });
-    }
-  }
 
   Future<void> getCategories() async {
     final response = await http.get(
@@ -53,7 +44,21 @@ class _BuatPageState extends State<BuatPage> {
     }
   }
 
-  Future<void> createPost(String status) async {
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? pickedImage = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (pickedImage != null) {
+      setState(() {
+        image = pickedImage;
+      });
+    }
+  }
+
+  Future<void> updatePost(String status) async {
     if (titleController.text.trim().isEmpty) {
       print("Judul wajib diisi");
       return;
@@ -70,11 +75,12 @@ class _BuatPageState extends State<BuatPage> {
     }
 
     var request = http.MultipartRequest(
-      "POST",
-      Uri.parse("http://localhost:3000/api/v1/posts"),
+      "PATCH",
+      Uri.parse(
+        "http://localhost:3000/api/v1/posts/${widget.post['id']}",
+      ),
     );
 
-    request.fields["userId"] = "31";
     request.fields["categoryId"] = selectedCategory.toString();
     request.fields["title"] = titleController.text.trim();
     request.fields["content"] = contentController.text.trim();
@@ -107,16 +113,16 @@ class _BuatPageState extends State<BuatPage> {
 
     final response = await request.send();
 
-    if (response.statusCode == 201) {
-      print("Artikel berhasil dibuat");
+    if (response.statusCode == 200) {
+      print("Artikel berhasil diperbarui");
 
       if (mounted) {
-        Navigator.pushReplacementNamed(context, "/artikelSaya");
+        Navigator.pop(context, true);
       }
     } else {
       final responseBody = await response.stream.bytesToString();
 
-      print("Artikel gagal dibuat");
+      print("Artikel gagal diperbarui");
       print(responseBody);
     }
   }
@@ -124,6 +130,13 @@ class _BuatPageState extends State<BuatPage> {
   @override
   void initState() {
     super.initState();
+
+    titleController.text = widget.post['title'] ?? "";
+    contentController.text = widget.post['content'] ?? "";
+
+    selectedCategory = widget.post['categoryId'];
+    selectedStatus = widget.post['status'] ?? "Published";
+
     getCategories();
   }
 
@@ -147,11 +160,11 @@ class _BuatPageState extends State<BuatPage> {
             appBar: AppBar(
               leading: IconButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, "/beranda");
+                  Navigator.pop(context);
                 },
                 icon: const Icon(Icons.close),
               ),
-              title: const Text("Buat Artikel"),
+              title: const Text("Edit Artikel"),
             ),
 
             body: SingleChildScrollView(
@@ -159,7 +172,6 @@ class _BuatPageState extends State<BuatPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // FOTO
                   const Text(
                     "Foto",
                     style: TextStyle(fontWeight: FontWeight.w600),
@@ -177,31 +189,38 @@ class _BuatPageState extends State<BuatPage> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(),
                       ),
-                      child: image == null
-                          ? const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.image_outlined,
-                                  size: 50,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(height: 10),
-                                Text("+ Tambahkan Foto"),
-                              ],
-                            )
-                          : Image.network(
+                      child: image != null
+                          ? Image.network(
                               image!.path,
                               width: double.infinity,
                               height: 200,
                               fit: BoxFit.cover,
-                            ),
+                            )
+                          : widget.post['imageUrl'] != null
+                              ? Image.network(
+                                  widget.post['imageUrl'],
+                                  width: double.infinity,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_outlined,
+                                      size: 50,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 10),
+                                    Text("+ Tambahkan Foto"),
+                                  ],
+                                ),
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
-                  // JUDUL
                   const Text(
                     "Judul",
                     style: TextStyle(
@@ -224,7 +243,6 @@ class _BuatPageState extends State<BuatPage> {
 
                   const SizedBox(height: 20),
 
-                  // KATEGORI
                   const Text(
                     "Kategori",
                     style: TextStyle(
@@ -243,14 +261,12 @@ class _BuatPageState extends State<BuatPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-
                     items: categories.map<DropdownMenuItem<int>>((category) {
                       return DropdownMenuItem<int>(
                         value: category['id'],
                         child: Text(category['name']),
                       );
                     }).toList(),
-
                     onChanged: (value) {
                       setState(() {
                         selectedCategory = value;
@@ -288,15 +304,19 @@ class _BuatPageState extends State<BuatPage> {
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () {
-                            createPost("Draft");
+                            updatePost("Draft");
                           },
                           style: OutlinedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            side: const BorderSide(color: AppColors.navy),
+                            side: const BorderSide(
+                              color: AppColors.navy,
+                            ),
                           ),
                           child: const Text(
                             "Draft",
-                            style: TextStyle(color: AppColors.navy),
+                            style: TextStyle(
+                              color: AppColors.navy,
+                            ),
                           ),
                         ),
                       ),
@@ -306,14 +326,16 @@ class _BuatPageState extends State<BuatPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            createPost("Published");
+                            updatePost("Published");
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.navy,
                           ),
                           child: const Text(
                             "Published",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
