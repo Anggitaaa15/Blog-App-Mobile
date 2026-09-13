@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/profil.dart';
+
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -6,17 +11,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-     debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false,
 
-    routes: {
-      "/home": (context) => HomePage(),
-      "/jelajahi": (context) => JelajahiPage(),
-      "/buat": (context) => BuatPage(),
-      "/artikel-saya": (context) => ArtikelSayaPage(),
-      "/profil": (context) => ProfilPage(),
-    },
+      routes: {"/profil": (context) => ProfilPage()},
 
-    initialRoute: "/home",
+      initialRoute: "/profil",
     );
   }
 }
