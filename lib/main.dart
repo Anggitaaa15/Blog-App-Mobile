@@ -3,6 +3,7 @@ import 'package:frontend/pages/profil.dart';
 import 'package:frontend/pages/artikelSaya.dart';
 import 'package:frontend/pages/homePage.dart';
 import 'package:frontend/pages/createArtikel.dart';
+import 'package:frontend/pages/jelajahiPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         "/profil": (context) => ProfilPage(),
         "/artikelSaya": (context) => Artikelsaya(),
         "/beranda": (context) => Homepage(),
+        "/jelajahi": (context) => JelajahiPage(),
         "/buat": (context) => BuatPage()
       },
 

@@ -57,6 +57,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+<<<<<<< HEAD
   cross_file:
     dependency: transitive
     description:
@@ -65,6 +66,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.5+5"
+=======
+>>>>>>> feature/jelajahi
   crypto:
     dependency: transitive
     description:
@@ -97,6 +100,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+<<<<<<< HEAD
   file_selector_linux:
     dependency: transitive
     description:
@@ -129,6 +133,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+6"
+=======
+>>>>>>> feature/jelajahi
   flutter:
     dependency: "direct main"
     description: flutter
@@ -155,11 +161,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+<<<<<<< HEAD
   flutter_web_plugins:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
+=======
+>>>>>>> feature/jelajahi
   google_fonts:
     dependency: "direct main"
     description:
@@ -177,7 +186,11 @@ packages:
     source: hosted
     version: "2.0.2"
   http:
+<<<<<<< HEAD
     dependency: "direct main"
+=======
+    dependency: transitive
+>>>>>>> feature/jelajahi
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -192,6 +205,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+<<<<<<< HEAD
   image_picker:
     dependency: "direct main"
     description:
@@ -256,6 +270,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+=======
+>>>>>>> feature/jelajahi
   jni:
     dependency: transitive
     description:
@@ -344,6 +360,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+<<<<<<< HEAD
   mime:
     dependency: transitive
     description:
@@ -352,6 +369,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+=======
+>>>>>>> feature/jelajahi
   objective_c:
     dependency: transitive
     description:
@@ -559,4 +578,8 @@ packages:
     version: "3.1.4"
 sdks:
   dart: ">=3.12.2 <4.0.0"
+<<<<<<< HEAD
   flutter: ">=3.44.0"
+=======
+  flutter: ">=3.38.4"
+>>>>>>> feature/jelajahi
