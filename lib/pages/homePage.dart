@@ -349,9 +349,7 @@ class _HomepageState extends State<Homepage> {
         ),
       ),
 
-      bottomNavigationBar: CustomNavBar(
-        currentIndex: 0,
-      ),
+      bottomNavigationBar: CustomNavBar(currentIndex: 0,),
     );
   }
 }

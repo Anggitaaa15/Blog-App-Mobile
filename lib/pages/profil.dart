@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/theme/appColors.dart';
+import '../widgets/navigation.dart';
 
 class ProfilPage extends StatelessWidget {
   const ProfilPage({super.key});
@@ -145,6 +146,7 @@ class ProfilPage extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: CustomNavBar(currentIndex: 4),
     );
   }
 }

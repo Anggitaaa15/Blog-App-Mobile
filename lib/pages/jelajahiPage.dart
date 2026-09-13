@@ -349,9 +349,7 @@ class _JelajahiPageState extends State<JelajahiPage> {
         ),
       ),
 
-      bottomNavigationBar: const CustomNavBar(
-        currentIndex: 1,
-      ),
+      bottomNavigationBar: const CustomNavBar(currentIndex: 1,),
     );
   }
 }

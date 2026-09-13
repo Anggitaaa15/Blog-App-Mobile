@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/theme/appColors.dart';
 import 'package:http/http.dart' as http;
+import '../widgets/navigation.dart';
 
 class Artikelsaya extends StatefulWidget {
   const Artikelsaya({super.key});
@@ -438,6 +439,7 @@ class _ArtikelsayaState extends State<Artikelsaya> {
           ),
         ],
       ),
+      bottomNavigationBar: CustomNavBar(currentIndex: 3),
     );
   }
 }

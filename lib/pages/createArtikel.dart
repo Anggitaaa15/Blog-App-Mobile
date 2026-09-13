@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/theme/appColors.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import '../widgets/navigation.dart';
 
 class BuatPage extends StatefulWidget {
   const BuatPage({super.key});
@@ -297,6 +298,7 @@ class _BuatPageState extends State<BuatPage> {
           ],
         ),
       ),
+      bottomNavigationBar: CustomNavBar(currentIndex: 2,),
     );
   }
 }

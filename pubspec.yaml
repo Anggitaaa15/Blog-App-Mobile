@@ -34,15 +34,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-<<<<<<< HEAD
+
   http: ^1.6.0
   google_fonts: ^8.2.1
   image_picker: ^1.2.3
-  
-=======
-  google_fonts: ^8.2.1
 
->>>>>>> feature/jelajahi
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,17 +59,14 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/logo.png
-<<<<<<< HEAD
     - assets/images/profile.jpg
     - assets/images/imageHome.png
-=======
     - assets/images/teknologi.png
     - assets/images/pendidikan.png
     - assets/images/gayahidup.png
     - assets/images/olahraga.png
     - assets/images/kesehatan.png
     - assets/images/tipsTutorial.png
->>>>>>> feature/jelajahi
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

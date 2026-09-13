@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/pages/profil.dart';
 import 'package:frontend/pages/artikelSaya.dart';
 import 'package:frontend/pages/homePage.dart';
@@ -16,16 +17,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        fontFamily: GoogleFonts.poppins().fontFamily,
+      ),
 
       routes: {
-        "/profil": (context) => ProfilPage(),
-        "/artikelSaya": (context) => Artikelsaya(),
         "/beranda": (context) => Homepage(),
         "/jelajahi": (context) => JelajahiPage(),
-        "/buat": (context) => BuatPage()
+        "/buat": (context) => BuatPage(),
+        "/artikelSaya": (context) => Artikelsaya(),
+        "/profil": (context) => ProfilPage(),
       },
 
-      initialRoute: "/profil",
+      initialRoute: "/beranda",
     );
   }
 }
