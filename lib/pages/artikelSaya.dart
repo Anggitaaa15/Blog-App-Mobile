@@ -34,23 +34,32 @@ class _ArtikelsayaState extends State<Artikelsaya> {
     }
   }
 
-  String formatTime(String date) {
+  String formatTimeAgo(String date) {
     final createdAt = DateTime.parse(date);
+    final diff = DateTime.now().difference(createdAt);
 
-    return "${createdAt.day} ${[
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "Mei",
-      "Jun",
-      "Jul",
-      "Agu",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Des"
-    ][createdAt.month - 1]} ${createdAt.year}";
+    if (diff.inMinutes < 60) {
+      return "${diff.inMinutes} menit yang lalu";
+    } else if (diff.inHours < 24) {
+      return "${diff.inHours} jam yang lalu";
+    } else if (diff.inDays < 7) {
+      return "${diff.inDays} hari yang lalu";
+    } else {
+      return "${createdAt.day} ${[
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "Mei",
+        "Jun",
+        "Jul",
+        "Agu",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Des"
+      ][createdAt.month - 1]} ${createdAt.year}";
+    }
   }
 
   @override
@@ -74,25 +83,31 @@ class _ArtikelsayaState extends State<Artikelsaya> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
+
+      // APP BAR
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
         titleSpacing: 20,
+
         title: Row(
           children: [
             Image.asset(
-              "assets/images/logo.png",
-              width: 25,
-              height: 25,
+              'assets/images/logo.png',
+              width: 30,
+              height: 30,
             ),
 
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
 
             const Text(
-              "Lintas Kata",
+              'Lintas Kata',
               style: TextStyle(
+                fontWeight: FontWeight.bold,
                 color: AppColors.navy,
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
               ),
             ),
 
@@ -100,16 +115,16 @@ class _ArtikelsayaState extends State<Artikelsaya> {
 
             const Icon(
               Icons.search,
-              color: Colors.black,
+              color: AppColors.navy,
               size: 23,
             ),
 
             const SizedBox(width: 18),
 
             const CircleAvatar(
-              radius: 13,
+              radius: 16,
               backgroundImage: AssetImage(
-                "assets/images/profile.jpg",
+                'assets/images/profile.jpg',
               ),
             ),
           ],
@@ -118,7 +133,7 @@ class _ArtikelsayaState extends State<Artikelsaya> {
 
       body: Column(
         children: [
-          // TAB
+          // TAB PUBLISHED & DRAFT
           Row(
             children: [
               Expanded(
@@ -214,14 +229,14 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(20),
                     itemCount: filteredPosts.length,
                     itemBuilder: (context, index) {
-                      final post = filteredPosts[index];
+                      final itemPost = filteredPosts[index];
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(7),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
@@ -229,43 +244,34 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                             color: Colors.grey.shade300,
                           ),
                         ),
+
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // GAMBAR
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: post["imageUrl"] != null
-                                  ? Image.network(
-                                      post["imageUrl"],
-                                      width: 80,
-                                      height: 80,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Container(
-                                          width: 80,
-                                          height: 80,
-                                          color: Colors.grey.shade200,
-                                          child: const Icon(
-                                            Icons.image_outlined,
-                                            color: Colors.grey,
-                                          ),
-                                        );
-                                      },
-                                    )
-                                  : Container(
-                                      width: 80,
-                                      height: 80,
-                                      color: Colors.grey.shade200,
-                                      child: const Icon(
-                                        Icons.image_outlined,
-                                        color: Colors.grey,
-                                      ),
+                              child: Image.network(
+                                itemPost['imageUrl'] ?? '',
+                                width: 85,
+                                height: 115,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) {
+                                  return Container(
+                                    width: 85,
+                                    height: 85,
+                                    color: Colors.grey.shade200,
+                                    child: const Icon(
+                                      Icons.image_outlined,
+                                      color: Colors.grey,
                                     ),
+                                  );
+                                },
+                              ),
                             ),
 
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 10),
 
                             // ISI CARD
                             Expanded(
@@ -273,30 +279,27 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                 crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                 children: [
+                                  // KATEGORI + TITIK TIGA
                                   Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
                                     children: [
-                                      // KATEGORI
                                       Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 7,
-                                          vertical: 2,
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: AppColors.navy
+                                              .withOpacity(0.08),
                                           borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color: Colors.amber,
-                                            width: 0.8,
-                                          ),
+                                              BorderRadius.circular(20),
                                         ),
                                         child: Text(
-                                          "Kategori ${post["categoryId"]}",
+                                          itemPost['categoryName'] ?? '',
                                           style: const TextStyle(
-                                            fontSize: 8,
-                                            color: Colors.amber,
+                                            color: AppColors.navy,
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                       ),
@@ -306,26 +309,30 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                       // TITIK TIGA
                                       PopupMenuButton<String>(
                                         padding: EdgeInsets.zero,
-                                        iconSize: 19,
+                                        constraints:
+                                            const BoxConstraints(),
+                                        iconSize: 20,
                                         icon: const Icon(
                                           Icons.more_vert,
-                                          color: Colors.black,
+                                          color: AppColors.navy,
                                         ),
+
                                         onSelected: (value) {
                                           if (value == "edit") {
                                             print(
-                                              "Edit artikel ${post["id"]}",
+                                              "Edit artikel ${itemPost['id']}",
                                             );
                                           }
 
                                           if (value == "delete") {
                                             print(
-                                              "Delete artikel ${post["id"]}",
+                                              "Delete artikel ${itemPost['id']}",
                                             );
                                           }
                                         },
+
                                         itemBuilder: (context) => [
-                                          const PopupMenuItem<String>(
+                                          const PopupMenuItem(
                                             value: "edit",
                                             child: Row(
                                               children: [
@@ -338,7 +345,8 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                               ],
                                             ),
                                           ),
-                                          const PopupMenuItem<String>(
+
+                                          const PopupMenuItem(
                                             value: "delete",
                                             child: Row(
                                               children: [
@@ -356,72 +364,65 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                     ],
                                   ),
 
-                                  const SizedBox(height: 2),
+                                  const SizedBox(height: 5),
 
                                   // JUDUL
                                   Text(
-                                    post["title"],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 1),
-
-                                  // CONTENT
-                                  Text(
-                                    post["content"],
+                                    itemPost['title'] ?? '',
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                      fontSize: 8,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
                                       color: Colors.black,
                                     ),
                                   ),
 
-                                  const SizedBox(height: 5),
+                                  const SizedBox(height: 4),
 
-                                  // USERNAME + WAKTU
+                                  // CONTENT
+                                  Text(
+                                    itemPost['content'] ?? '',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 7),
+
+                                  // USER + WAKTU
                                   Row(
                                     children: [
-                                      const CircleAvatar(
-                                        radius: 7,
-                                        backgroundImage: AssetImage(
-                                          "assets/images/profile.jpg",
+                                      CircleAvatar(
+                                        radius: 8,
+                                        backgroundImage: NetworkImage(
+                                          itemPost['userImage'] ?? '',
                                         ),
                                       ),
 
-                                      const SizedBox(width: 4),
-
-                                      const Text(
-                                        "Anggita",
-                                        style: TextStyle(
-                                          fontSize: 8,
-                                          color: AppColors.navy,
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 6),
-
-                                      const Text(
-                                        "•",
-                                        style: TextStyle(
-                                          fontSize: 8,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-
-                                      const SizedBox(width: 6),
+                                      const SizedBox(width: 5),
 
                                       Text(
-                                        formatTime(post["createdAt"]),
+                                        itemPost['username'] ?? '',
                                         style: const TextStyle(
-                                          fontSize: 8,
-                                          color: Colors.grey,
+                                          fontSize: 9,
+                                          color: AppColors.navy,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+
+                                      const SizedBox(width: 8),
+
+                                      Text(
+                                        formatTimeAgo(
+                                          itemPost['createdAt'],
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 9,
+                                          color: AppColors.grey,
                                         ),
                                       ),
                                     ],
