@@ -277,7 +277,8 @@ class _DetailArtikelState extends State<DetailArtikel> {
                     ),
                     child: Text(
                       post!['content'] ?? '',
-                      style: const TextStyle(
+                      style: TextStyle(
+                        fontFamily: "Lora",
                         fontSize: 12,
                         height: 1.4,
                         color: Colors.black87,

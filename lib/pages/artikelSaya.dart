@@ -16,8 +16,8 @@ class Artikelsaya extends StatefulWidget {
 
 class _ArtikelsayaState extends State<Artikelsaya> {
   int selectedTab = 0;
-
   List posts = [];
+  Map user = {};
 
   Future<void> getPosts() async {
     final response = await http.get(
@@ -94,10 +94,27 @@ class _ArtikelsayaState extends State<Artikelsaya> {
     }
   }
 
+  Future<void> getUser() async {
+    final response = await http.get(
+      Uri.parse("http://localhost:3000/api/v1/users/31"),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      setState(() {
+        user = data['data'];
+      });
+    } else {
+      print("Data user gagal diambil");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getPosts();
+    getUser();
   }
 
   @override
@@ -146,13 +163,17 @@ class _ArtikelsayaState extends State<Artikelsaya> {
 
                   const Spacer(),
 
-                  const Icon(Icons.search, color: AppColors.navy, size: 23),
-
                   const SizedBox(width: 18),
 
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 16,
-                    backgroundImage: AssetImage('assets/images/profile.jpg'),
+                    backgroundColor: Colors.grey.shade200,
+                    backgroundImage: user['imageUrl'] != null
+                        ? NetworkImage(user['imageUrl'])
+                        : null,
+                    child: user['imageUrl'] == null
+                        ? const Icon(Icons.person, size: 18, color: Colors.grey)
+                        : null,
                   ),
                 ],
               ),
@@ -285,7 +306,7 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                       child: Image.network(
                                         itemPost['imageUrl'] ?? '',
                                         width: 85,
-                                        height: 115,
+                                        height: 120,
                                         fit: BoxFit.cover,
                                         errorBuilder:
                                             (context, error, stackTrace) {
@@ -367,7 +388,9 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                                   }
 
                                                   if (value == "delete") {
-                                                    confirmDelete(itemPost['id']);
+                                                    confirmDelete(
+                                                      itemPost['id'],
+                                                    );
                                                   }
                                                 },
 
@@ -395,7 +418,7 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                                           size: 18,
                                                         ),
                                                         SizedBox(width: 8),
-                                                        Text("Delete"),
+                                                        Text("Hapus"),
                                                       ],
                                                     ),
                                                   ),
@@ -404,7 +427,7 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                             ],
                                           ),
 
-                                          const SizedBox(height: 5),
+                                          SizedBox(height: 4),
 
                                           // JUDUL
                                           Text(
@@ -418,7 +441,7 @@ class _ArtikelsayaState extends State<Artikelsaya> {
                                             ),
                                           ),
 
-                                          const SizedBox(height: 4),
+                                          SizedBox(height: 3),
 
                                           // CONTENT
                                           Text(

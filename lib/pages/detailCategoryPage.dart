@@ -174,18 +174,6 @@ class _DetailCategoryPageState extends State<DetailCategoryPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-              actions: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 16),
-                  child: CircleAvatar(
-                    radius: 16,
-                    backgroundImage: AssetImage(
-                      'assets/images/profile.jpg',
-                    ),
-                  ),
-                ),
-              ],
             ),
 
             body: ListView.builder(

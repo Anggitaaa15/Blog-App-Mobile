@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/detailArtikel.dart';
+import 'package:frontend/pages/jelajahiPage.dart';
 import '../theme/appColors.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/navigation.dart';
@@ -15,6 +16,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   List posts = [];
+  Map user = {};
 
   Set<int> savedPostIds = {};
 
@@ -103,15 +105,35 @@ class _HomepageState extends State<Homepage> {
     }
   }
 
+  Future<void> getUser() async {
+    final response = await http.get(
+      Uri.parse("http://localhost:3000/api/v1/users/31"),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      setState(() {
+        user = data['data'];
+      });
+    } else {
+      print("Data user gagal diambil");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getPosts();
     getBookmarks();
+    getUser();
   }
 
   @override
   Widget build(BuildContext context) {
+    final username =
+        ModalRoute.of(context)!.settings.arguments as String? ?? "User";
+
     return Column(
       children: [
         MobileStatusBar(),
@@ -124,47 +146,39 @@ class _HomepageState extends State<Homepage> {
               automaticallyImplyLeading: false,
               backgroundColor: Colors.white,
               elevation: 0,
+              titleSpacing: 20,
 
-              leadingWidth: 140,
+              title: Row(
+                children: [
+                  Image.asset('assets/images/logo.png', width: 30, height: 30),
 
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/images/logo.png',
-                      width: 30,
-                      height: 30,
+                  const SizedBox(width: 8),
+
+                  const Text(
+                    'Lintas Kata',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.navy,
+                      fontSize: 16,
                     ),
-
-                    const SizedBox(width: 8),
-
-                    const Text(
-                      'Blog App',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.navy,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search, color: AppColors.navy),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: CircleAvatar(
-                    radius: 16,
-                    backgroundImage: AssetImage('assets/images/profile.jpg'),
                   ),
-                ),
-              ],
+
+                  const Spacer(),
+
+                  const SizedBox(width: 18),
+
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.grey.shade200,
+                    backgroundImage: user['imageUrl'] != null
+                        ? NetworkImage(user['imageUrl'])
+                        : null,
+                    child: user['imageUrl'] == null
+                        ? const Icon(Icons.person, size: 18, color: Colors.grey)
+                        : null,
+                  ),
+                ],
+              ),
             ),
 
             body: SingleChildScrollView(
@@ -177,8 +191,8 @@ class _HomepageState extends State<Homepage> {
                   children: [
                     const SizedBox(height: 5),
 
-                    const Text(
-                      "Halo, Anggita 👋",
+                    Text(
+                      "Halo, $username 👋",
                       style: TextStyle(
                         color: AppColors.navy,
                         fontSize: 17,
@@ -238,17 +252,26 @@ class _HomepageState extends State<Homepage> {
                           Positioned(
                             right: 14,
                             bottom: 14,
-                            child: Container(
-                              width: 32,
-                              height: 32,
-                              decoration: const BoxDecoration(
-                                color: Colors.orange,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.arrow_outward,
-                                color: AppColors.navy,
-                                size: 18,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context, MaterialPageRoute
+                                  (builder: (context) => JelajahiPage())
+                                );
+                              },
+
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.navy,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_outward,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
                               ),
                             ),
                           ),
@@ -318,7 +341,7 @@ class _HomepageState extends State<Homepage> {
                                   ),
                                 ),
 
-                                const SizedBox(width: 10),
+                                SizedBox(width: 10),
 
                                 Expanded(
                                   child: Column(
@@ -349,22 +372,26 @@ class _HomepageState extends State<Homepage> {
                                             ),
                                           ),
 
-                                          const Spacer(),
+                                          Spacer(),
 
                                           IconButton(
                                             onPressed: () {
                                               toggleBookmark(itemPost['id']);
                                             },
                                             icon: Icon(
-                                              savedPostIds.contains(itemPost['id'])
+                                              savedPostIds.contains(
+                                                    itemPost['id'],
+                                                  )
                                                   ? Icons.bookmark
                                                   : Icons.bookmark_border,
+
+                                              color: AppColors.navy,
                                             ),
-                                          )
+                                          ),
                                         ],
                                       ),
 
-                                      const SizedBox(height: 5),
+                                      SizedBox(height: 2),
 
                                       Text(
                                         itemPost['title'] ?? '',
@@ -377,13 +404,14 @@ class _HomepageState extends State<Homepage> {
                                         ),
                                       ),
 
-                                      const SizedBox(height: 4),
+                                      SizedBox(height: 3),
 
                                       Text(
                                         itemPost['content'] ?? '',
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
+                                          fontFamily: "Lora",
                                           fontSize: 10,
                                           color: Colors.black87,
                                         ),

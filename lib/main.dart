@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/loginPage.dart';
+import 'package:frontend/pages/registerPage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/pages/profil.dart';
 import 'package:frontend/pages/artikelSaya.dart';
@@ -27,9 +29,11 @@ class MyApp extends StatelessWidget {
         "/buat": (context) => BuatPage(),
         "/artikelSaya": (context) => Artikelsaya(),
         "/profil": (context) => ProfilPage(),
+        "/login": (context) => Login(),
+        "/register": (context) => Register(),
       },
 
-      initialRoute: "/beranda",
+      initialRoute: "/register",
     );
   }
 }

@@ -38,6 +38,7 @@ dependencies:
   http: ^1.6.0
   google_fonts: ^8.2.1
   image_picker: ^1.2.3
+  searchbar_animation: ^0.0.4
 
 dev_dependencies:
   flutter_test:
@@ -59,7 +60,6 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/logo.png
-    - assets/images/profile.jpg
     - assets/images/imageHome.png
     - assets/images/teknologi.png
     - assets/images/pendidikan.png
